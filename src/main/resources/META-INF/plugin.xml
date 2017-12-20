@@ -1,0 +1,43 @@
+<idea-plugin>
+    <id>br.com.pedront.hackerrank</id>
+    <name>HackerRank Plugin</name>
+    <version>1.0</version>
+    <vendor email="pedront@gmail.com" url="http://www.github.com/pedront">Pedro Nakano Tramontin</vendor>
+
+    <description><![CDATA[
+      Enter short description for your plugin here.<br>
+      <em>most HTML tags may be used</em>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      HackerRank Plugin
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="HackerRank" anchor="bottom"
+                    factoryClass="br.com.pedront.hackerrank.HackerRankToolWindow"
+                    icon="/icon/toolbar.png"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <group id="main.java.br.com.pedront.hackerrank.group" text="HackerRank" popup="true">
+            <action id="main.java.br.com.pedront.hackerrank.openproblem"
+                    class="br.com.pedront.hackerrank.Problem"
+                    text="Open Problem"
+                    description="Opens a new problem from HackerRank">
+            </action>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </group>
+    </actions>
+</idea-plugin>
