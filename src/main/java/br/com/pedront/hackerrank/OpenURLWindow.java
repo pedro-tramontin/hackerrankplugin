@@ -42,9 +42,11 @@ public class OpenURLWindow {
 
     private void addListeners(final Consumer<String> urlConsumer) {
         this.button.addActionListener(e -> {
-            urlConsumer.accept(urlTextField.getText());
+            if (!urlTextField.getText().isEmpty()) {
+                urlConsumer.accept(urlTextField.getText());
 
-            frame.setVisible(false);
+                frame.setVisible(false);
+            }
         });
     }
 

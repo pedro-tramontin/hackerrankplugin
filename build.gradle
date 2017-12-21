@@ -27,5 +27,5 @@ repositories {
 
 dependencies {
     compile "org.jsoup:jsoup:1.11.2"
-
+    compile "commons-lang:commons-lang:2.6"
 }

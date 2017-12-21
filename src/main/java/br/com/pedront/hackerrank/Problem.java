@@ -6,11 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.ide.projectView.impl.nodes.PackageUtil;
+import com.intellij.ide.util.PackageChooserDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.JavaDirectoryService;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
@@ -25,26 +28,10 @@ import com.intellij.psi.PsiPackage;
  */
 public class Problem extends AnAction {
 
+    private static final String PACKAGE_CHOOSER_TITLE = "Choose Package";
+
     @Override
     public void actionPerformed(AnActionEvent event) {
-        // try {
-        // Document doc = Jsoup.connect("https://www.hackerrank.com/challenges/solve-me-first/problem").get();
-        // Document doc = Jsoup.connect("https://www.hackerrank.com/challenges/simple-array-sum/problem").get();
-        // Document doc = Jsoup.connect("https://www.hackerrank.com/challenges/compare-the-triplets/problem")
-        // .get();
-        //
-        // Element descriptionDiv = doc.selectFirst(".challenge-text");
-        //
-        //
-        // final OpenProblemNotifier openProblemNotifier = messageBus
-        // .syncPublisher(OpenProblemNotifier.OPEN_PROBLEM_NOTIFIER_TOPIC);
-        //
-        // openProblemNotifier.open(descriptionDiv.html());
-
-        // } catch (IOException e1) {
-        // e1.printStackTrace();
-        // }
-
         final Project project = event.getProject();
         if (project == null) {
             new SimpleMessageDialog(null, "Warning", "Open a project to use this plugin!").show();
@@ -57,7 +44,17 @@ public class Problem extends AnAction {
                         ProblemNotifier.OPEN_PROBLEM_NOTIFIER_TOPIC)::open)
                                 .show();
 
-        createClass(project, "teste");
+        // createClass(project, "teste");
+
+        // final PackageChooserDialog teste = new PackageChooserDialog("teste", project);
+        //
+        // teste.show();
+        // System.out.println(teste.getSelectedPackage());
+
+        final ToolWindow hackerRankToolWindow = ToolWindowManager.getInstance(project).getToolWindow("HackerRank");
+        if (!hackerRankToolWindow.isActive()) {
+            hackerRankToolWindow.show(null);
+        }
     }
 
     class SimpleMessageDialog extends DialogWrapper {
@@ -84,6 +81,13 @@ public class Problem extends AnAction {
         protected Action[] createActions() {
             return new Action[] { getOKAction() };
         }
+    }
+
+    private void chooPackageAndCreateClass(Project project) {
+        final PackageChooserDialog teste = new PackageChooserDialog(PACKAGE_CHOOSER_TITLE, project);
+
+        teste.show();
+        System.out.println(teste.getSelectedPackage());
     }
 
     private void createClass(Project project, String name) {
