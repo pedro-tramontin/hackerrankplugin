@@ -28,4 +28,7 @@ repositories {
 dependencies {
     compile "org.jsoup:jsoup:1.11.2"
     compile "commons-lang:commons-lang:2.6"
+
+    compile "com.squareup.retrofit2:retrofit:2.3.0"
+    compile "com.squareup.retrofit2:converter-gson:2.3.0"
 }

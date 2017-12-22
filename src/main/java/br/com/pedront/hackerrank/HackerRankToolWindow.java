@@ -2,6 +2,7 @@ package br.com.pedront.hackerrank;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.swing.*;
 
@@ -12,6 +13,9 @@ import org.jsoup.nodes.Element;
 
 import com.intellij.ide.projectView.impl.nodes.PackageUtil;
 import com.intellij.ide.util.PackageChooserDialog;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
@@ -25,6 +29,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBus;
 
+import br.com.pedront.hackerrank.mapping.TemplateData;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -95,16 +100,19 @@ public class HackerRankToolWindow implements ToolWindowFactory {
                 // });
 
                 final Element scriptInitialData = doc.selectFirst("script#initialData");
-                System.out.println(scriptInitialData.child(0));
+                String text = scriptInitialData.childNode(0).toString().trim();
+                String textUnescaped = URLDecoder.decode(text, "UTF-8");
 
-                // ApplicationManager.getApplication().invokeLater(() -> {
-                //
-                // final PsiPackage psiPackage = choosePackage(project);
-                //
-                // ApplicationManager.getApplication().runWriteAction(() -> {
-                // createClass(psiPackage);
-                // });
-                // });
+                ApplicationManager.getApplication().invokeLater(() -> {
+
+                    final PsiPackage psiPackage = choosePackage(project);
+
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        final TemplateData templateData = TemplateData.getTemplateData(textUnescaped);
+
+                        createClass(project, psiPackage, templateData);
+                    });
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -121,18 +129,27 @@ public class HackerRankToolWindow implements ToolWindowFactory {
         return packageChooserDialog.getSelectedPackage();
     }
 
-    private void createClass(PsiPackage psiPackage) {
+    private void createClass(final Project project, PsiPackage psiPackage,
+            final TemplateData templateData) {
 
         if (psiPackage != null) {
             final PsiDirectory psiDirectory = psiPackage.getDirectories()[0];
 
-            createClass(psiDirectory, "MinhaClasse");
+            final PsiClass psiClass = createClass(psiDirectory, "Solution", templateData);
+
+            final VirtualFile child = psiDirectory.getVirtualFile().findChild("Solution.java");
+            if (child != null) {
+                OpenFileDescriptor descriptor = new OpenFileDescriptor(project, child);
+                FileEditorManager.getInstance(project).openTextEditor(descriptor, true);
+            }
         }
     }
 
-    private void createClass(PsiDirectory directory, String name) {
-        JavaDirectoryService.getInstance()
-                .createClass(directory, name, "hackerrank.java", true);
+    private PsiClass createClass(PsiDirectory directory, String name, TemplateData templateData) {
+
+        return JavaDirectoryService.getInstance()
+                .createClass(directory, name, "hackerrank.java", false, templateData.getAsMap());
+
     }
 
     private void createClass(Project project, String name) {
